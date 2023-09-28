@@ -1,0 +1,70 @@
+
+<div class="bodyClass">
+    <div class="container">
+      <div class="messaging">
+        <h3 class=" text-center mb-2 chat_header">Hello And Welcome -- {{UserName}} </h3>
+        <div class="inbox_msg">
+          <div class="mesgs">
+            <div class="msg_history">
+              <div class="text-center mt-3 text-danger" *ngIf="EmptyList">
+                <h5> No Messages Between In Group Chat Of Users</h5>
+             </div>
+              <div *ngFor="let msg of messages">
+                <div class="incoming_msg" *ngIf="msg.type == 'received'">
+                  <div class="incoming_msg_img"> </div>
+                  <div class="received_msg">
+                    <div class="received_withd_msg">
+                      <p>
+                        {{msg.message}}  (MessageBy) - 
+                        <span class="text-warning">{{msg.clientuniqueid}}</span>
+                      </p>
+                      <span class="time_date"> {{msg.date | date:'medium'}} </span>
+                    </div>
+                 
+                  </div>
+                </div>
+                <div class="outgoing_msg" *ngIf="msg.type == 'sent'">
+                  <div class="sent_msg">
+                    <p>
+                      {{msg.message}}  (MessageBy) - 
+                      <span class="text-warning">{{msg.clientuniqueid}}</span>
+                    </p>
+                    <span class="time_date"> {{msg.date | date:'medium'}}</span>
+                   
+4                </div>
+              </div>
+            </div>
+            <div class="type_msg">-4
+              <div class="input_msg_write">
+                <input type="text" class="write_msg" [value]="txtMessage" (input)="MessageSet($event)"
+                  (keydown.enter)="sendMessage()" placeholder="Type a message" />
+                <button class="msg_send_btn" type="button" (click)="sendMessage()"><i class="fas fa-share"
+                    aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div>
+              <ul *ngFor="let user of combinedData" >
+                <li>
+                  <a (click)="GetReceiverData(user)" href="javascript:;">{{user.firstName}} </a> <span class="ms-3 UnreadColor"> (( UNread Messages - {{user.noOfUnreadMessages}}))</span>
+                  <span class="text-primary" *ngIf="user.isOnline; else Offline">
+                     Online
+                  </span>
+                  
+                  <ng-template #Offline class="text-danger">
+                   Offline
+                  </ng-template></li>
+              </ul>
+            </div>
+          </div>
+          <div class="text-center mb-4">
+            <button class="btn btn-danger" routerLink="/login" (click)="SetOfflineStatus()">
+              Logout
+            </button>
+          </div>
+        
+        </div>
+       
+    
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,85 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<div class="bodyClass">
+  <div class="container">
+      <h3 class=" text-center chat_header">Hello {{UserName}} You Are Chatting With -- {{ReceiverName}} </h3>
+  
+      <span *ngIf="StatusTyping!=''">{{StatusTyping}}</span>
+      <div class="messaging">
+        <div class="inbox_msg">
+          <div class="mesgs">
+            <div #chatMessagesContainer class="msg_history">
+  
+              <div class="text-center mt-3 text-danger" *ngIf="EmptyList">
+                 <h5> No Messages Between This Users {{UserName}} And {{ReceiverName}}</h5>
+                 
+                
+              </div>
+              <div class="text-center mt-3 text-danger" *ngIf="EmptyChatBool">
+                <div class="text-center Date">{{EmptyMessageDate | date : 'MMM dd, YYYY'}}</div>
+              </div>
+  
+              <div *ngFor="let msg of OldHistoryMessage; let Id = index">
+                <div class="msg" *ngIf="Id > 0 ? sameDates(msg.createdDate, OldHistoryMessage[Id-1].createdDate): true">
+                  <div class="text-center Date">{{msg.createdDate | date : 'MMM dd, YYYY'}}</div>
+  
+                  </div>
+                <p [ngClass]="{'sender': msg.fromUserId == SenderId, 'default-text': msg.fromUserId != SenderId}">
+                  <br>
+                  {{ msg.message }}
+              
+                  <br>
+                  <span>{{formatTime(msg.createdDate)}}</span>
+                   <!-- <span class="SendedId">(({{msg.fromUserId}}))</span> -->
+                 </p>
+              </div>
+         
+              <div *ngFor="let msg of OneToOneChatMessage">
+                <!-- <div class="incoming_msg" *ngIf="msg.ToUserId == 'received'"> -->
+                  <!-- <div class="incoming_msg_img"> </div>
+                  <div class="received_msg">
+                    <div class="received_withd_msg"> -->
+                      <!-- " -->
+                   
+                      <p [ngClass]="{'sender': msg.fromUserId == SenderId, 'default-text': msg.fromUserId != SenderId}">
+                        
+                        {{ msg.message }}
+                        <br>
+                        <span>{{ formatTime(currentTime) }}</span>
+                      
+  <!--                   s -->
+                      </p>
+                      
+                      <!-- <span class="time_date"> {{msg.date | date:s'medium'}} </span> -->
+                    <!-- </div>
+                  </div> -->
+                <!-- </div> -->
+                <!-- <div class="outgoing_msg" *ngIf="msg.type == 'sent'">
+                  <div class="sent_msg">
+                    <p>
+                      {{msg.message}}
+                    </p>
+                    <span class="time_date"> {{msg.date | date:'medium'}}</span>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div class="type_msg">
+              <div class="input_msg_write">
+                <input   type="text" class="write_msg" #SendMessage [value]="txtMessage" (keyup)="MessageSet($event,false)" (focusout)="SetUserTypinStatus(false, $event)" (focus)="SetUserTypinStatus(true, $event)"
+                  (keydown.enter)="sendMessage()" placeholder="Type a message" /> <span><i  (click)="EmojiEnable()" class="fa-solid fa-face-laugh"></i></span><span *ngIf="Emoji"><app-emoji-picker (addEmojiToMessage)="MessageSet($event,true)"></app-emoji-picker></span>
+                <button class="msg_send_btn" type="button" (click)="sendMessage()"><i class="fas fa-share"
+                    aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>  
+        <div class="text-center mt-4">
+          <button class="btn btn-warning"  (click)="UpdateChatHistoryMessage()">
+            Back To Group Chat
+          </button>
+        </div>
+      </div>
+    </div>
+  
+  </div> 
+    
