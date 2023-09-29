@@ -28,10 +28,10 @@
             <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
             <div id="status-options">
               <ul>
-                <li id="status-online" class="active"><span class="status-circle"></span> <p>Online</p></li>
-                <li id="status-away"><span class="status-circle"></span> <p>Away</p></li>
-                <li id="status-busy"><span class="status-circle"></span> <p>Busy</p></li>
-                <li id="status-offline"><span class="status-circle"></span> <p>Offline</p></li>
+                <li id="status-online" class="active"><span class="status-circle"></span> <p>{{WhatsupConstants.Online}}</p></li>
+                <li id="status-away"><span class="status-circle"></span> <p>{{WhatsupConstants.Away}}</p></li>
+                <li id="status-busy"><span class="status-circle"></span> <p>{{WhatsupConstants.Busy}}</p></li>
+                <li id="status-offline"><span class="status-circle"></span> <p>{{WhatsupConstants.Offline}}</p></li>
               </ul>
             </div>
             <div id="expanded">
@@ -60,7 +60,7 @@
                 <div class="meta">
                   <p class="name">{{user.firstName}} <a *ngIf="user.noOfUnreadMessages>0" href="javascript:void(0);" class="ms-1 p-1 UnreadMessages text-center">{{user.noOfUnreadMessages}}</a> </p>
                   
-                  <p *ngIf="!user.isOnline" class="preview">Last Seen {{user.lastStatus | date : 'MMM dd, YYYY'}}</p>
+                  <p *ngIf="!user.isOnline" class="preview">{{WhatsupConstants.LastSeen}} {{user.lastStatus | date : 'MMM dd, YYYY'}}</p>
                   <!-- && user.lastStatus!=='1900-01-01T00:00:00'; -->
                   <!-- else LastSeen -->
                   <!-- <ng-template #LastSeen class="preview">
@@ -72,16 +72,16 @@
           </ul>
         </div>
         <div id="bottom-bar">
-          <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add contact</span></button>
+          <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>{{WhatsupConstants.AddContact}}</span></button>
           <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
         </div>
       </div>
 
       <!-- If Receiver Is Not Selected -->
       <div *ngIf="!OnceReceiverConnected" class="content text-center">
-        <h1 class="mt-3 NoReceiverHead p-2">Lets Start The Conversation   <i class="fa fa-comments-o" aria-hidden="true"></i></h1>
+        <h1 class="mt-3 NoReceiverHead p-2">{{WhatsupConstants.LetsStartChat}}   <i class="fa fa-comments-o" aria-hidden="true"></i></h1>
         <iframe  src="https://giphy.com/embed/YoOM0hliors7cLsgmk" width="480" height="480" frameBorder="0" class="giphy-embed mt-4" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/tmkoc-jethalal-tarak-mehta-ka-ulta-chashma-YoOM0hliors7cLsgmk">via GIPHY</a></p>
-        <h1 class="mt-3 NoReceiverHead p-2">Watch Gifs If Dont Want To Chat !!!</h1>
+        <h1 class="mt-3 NoReceiverHead p-2">{{WhatsupConstants.WatchGifs}}</h1>
       </div>
 
 
@@ -106,7 +106,11 @@
 
             <li   [ngClass]="{'replies': msg.fromUserId == UserId, 'sent': msg.fromUserId != UserId}">
               <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-              <p>   {{convertUnicodeEmojiToEmoji(msg.message) }}</p>
+              <p> 
+                <img class="ImagePreview2" [src]="getImageUrl(ImageFromDB)" *ngIf="msg.messageType==2">
+                  {{convertUnicodeEmojiToEmoji(msg.message) }}
+                <span>{{formatTime(msg.createdDate)}}</span>
+              </p>
             </li>
             <!-- <li class="">
               <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
@@ -117,23 +121,28 @@
           <ul  *ngFor="let msg of OneToOneChatMessage">
             <li   [ngClass]="{'replies': msg.fromUserId == UserId, 'sent': msg.fromUserId != UserId}">
               <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-              <p>  {{convertUnicodeEmojiToEmoji(msg.message) }}</p>
+              <p> 
+                <img class="ImagePreview2" [src]="getImageUrl(msg.imageString)" *ngIf="msg.messageStatus!=1"> 
+                 {{convertUnicodeEmojiToEmoji(msg.message) }}
+                <span>{{ formatTime(msg.createdDate) }}</span>
+              </p>
             </li>
           </ul>
         </div>
         <div class="message-input">
           <div class="wrap">
+            <img class="ImagePreview" [src]="getImageUrl(ImageSelected64)" *ngIf="ImageIsAppend  && ImageSelected64!=''" alt="Base64 Image">
             <span *ngIf="Emoji"><app-emoji-picker (addEmojiToMessage)="MessageSet($event,true)"></app-emoji-picker></span> 
-          <input type="text" #SendMessage oninput="this.value = this.value.replace(/^\s+/g, '')" 
-          [value]="txtMessage" (keyup)="MessageSet($event,false)" (focusout)="SetUserTypinStatus(false, $event)" (focus)="SetUserTypinStatus(true, $event)" 
-            (keydown.enter)="sendMessage()"/>
-          <!-- <i class="fa fa-paperclip attachment" aria-hidden="true"></i> -->
-          <i  (click)="EmojiEnable()" class="fa-solid fa-face-laugh mt-2 ms-2 p-1" aria-hidden="true"></i>
-          <button class="submit" (click)="sendMessage()"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+            <input   [type]="BasedOnSelection" (change)="ImageFileSelected($event)" class="write_msg" #SendMessage [value]="txtMessage" (keyup)="MessageSet($event,false)" (focusout)="SetUserTypinStatus(false, $event)" (focus)="SetUserTypinStatus(true, $event)"
+                (keydown.enter)="sendMessage()" placeholder="Type a message" />
+            <i class="fa fa-paperclip attachment me-5" (click)="ImageEnable()" aria-hidden="true"></i>
+            <i  (click)="EmojiEnable()" class="fa-solid fa-face-laugh mt-2 ms-2 p-1" aria-hidden="true"></i>
+            <button class="submit" (click)="sendMessage()"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
           </div>
         </div>
       </div> 
     </div>
+    
  
     <script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script
     ><script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>

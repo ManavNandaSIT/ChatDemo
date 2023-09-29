@@ -5,6 +5,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ApiUrlHelper } from 'src/Common/apiUrlHelper';
 import { ToastrService } from 'ngx-toastr';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { LogInConstant, commonErrorMessage } from 'src/app/Constants/CommonConstant';
 
 
 @Component({
@@ -17,10 +18,14 @@ export default class LoginComponent implements OnInit {
   LoginForm:any;
   LoginResponse:any;
   showPassword: boolean = false;
+  loginConstant: any = [];
+  CommonErrorConstant:any =[];
 
   constructor(private route:Router , private service:CommonService , private apiHelper:ApiUrlHelper , private toast:ToastrService ){
   }
   ngOnInit(): void {
+    this.loginConstant = LogInConstant;
+    this.CommonErrorConstant = commonErrorMessage;
     this.LoginForm = new FormGroup({
       UserEmail: new FormControl('' , [Validators.required, Validators.email , Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
       UserPassword: new FormControl('' , [Validators.required ])

@@ -6,6 +6,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ApiUrlHelper } from 'src/Common/apiUrlHelper';
 import { ToastrService } from 'ngx-toastr';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { SignUpConstant } from 'src/app/Constants/CommonConstant';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,9 @@ export default class RegisterComponent implements OnInit {
 
   SignUpForm:any;
   SignUpResponse:any;
+  SignUpConstant:any =[];
   ngOnInit(): void {
+    this.SignUpConstant = SignUpConstant;
     this.SignUpForm = new FormGroup({
       FirstName: new FormControl('' , [Validators.required]),
       LastName :new FormControl('' , [Validators.required]) ,
@@ -51,4 +54,6 @@ export default class RegisterComponent implements OnInit {
       }
     })
   }
+
+
 }
