@@ -134,6 +134,7 @@ export class GroupChatComponent implements OnInit , OnDestroy {
         this.UserName = response.data.userName;
       }
     })
+    
   }
 
   public GetReceiverData(item:any){

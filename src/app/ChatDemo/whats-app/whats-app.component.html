@@ -1,6 +1,7 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <!------ Include the above in your HEAD tag ---------->
 
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
@@ -105,7 +106,7 @@
 
             <li   [ngClass]="{'replies': msg.fromUserId == UserId, 'sent': msg.fromUserId != UserId}">
               <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-              <p>  {{ msg.message }}</p>
+              <p>   {{convertUnicodeEmojiToEmoji(msg.message) }}</p>
             </li>
             <!-- <li class="">
               <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
@@ -116,16 +117,18 @@
           <ul  *ngFor="let msg of OneToOneChatMessage">
             <li   [ngClass]="{'replies': msg.fromUserId == UserId, 'sent': msg.fromUserId != UserId}">
               <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-              <p>  {{ msg.message }}</p>
+              <p>  {{convertUnicodeEmojiToEmoji(msg.message) }}</p>
             </li>
           </ul>
         </div>
         <div class="message-input">
           <div class="wrap">
+            <span *ngIf="Emoji"><app-emoji-picker (addEmojiToMessage)="MessageSet($event,true)"></app-emoji-picker></span> 
           <input type="text" #SendMessage oninput="this.value = this.value.replace(/^\s+/g, '')" 
-          [value]="txtMessage" (keyup)="MessageSet($event)" (focusout)="SetUserTypinStatus(false, $event)" (focus)="SetUserTypinStatus(true, $event)" 
+          [value]="txtMessage" (keyup)="MessageSet($event,false)" (focusout)="SetUserTypinStatus(false, $event)" (focus)="SetUserTypinStatus(true, $event)" 
             (keydown.enter)="sendMessage()"/>
-          <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
+          <!-- <i class="fa fa-paperclip attachment" aria-hidden="true"></i> -->
+          <i  (click)="EmojiEnable()" class="fa-solid fa-face-laugh mt-2 ms-2 p-1" aria-hidden="true"></i>
           <button class="submit" (click)="sendMessage()"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
           </div>
         </div>

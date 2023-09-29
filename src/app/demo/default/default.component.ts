@@ -44,7 +44,7 @@ export type ChartOptions = {
   templateUrl: './default.component.html',
   styleUrls: ['./default.component.scss']
 })
-export default class DefaultComponent {
+export default class DefaultComponent implements OnInit {
   // private props
   @ViewChild('growthChart') growthChart: ChartComponent;
   chartOptions: Partial<ChartOptions>;
@@ -141,6 +141,7 @@ export default class DefaultComponent {
 
   // Life cycle events
   ngOnInit(): void {
+    
     setTimeout(() => {
       this.monthChart = new ApexCharts(document.querySelector('#tab-chart-1'), this.monthOptions);
       this.monthChart.render();

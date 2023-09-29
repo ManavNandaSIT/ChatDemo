@@ -248,22 +248,28 @@ export class OneToOneChatComponent implements OnInit   {
       }
   }
 
+
   sendMessage(): void {
+    // this.ImageIsAppend=false;
+    // + " " + "imagePortion" +  " " + this.ImageSelected64
     this.Emoji=false;
     var MessageModel = {
       FromUserId: this.SenderId,
       ToUserId: this.ReceiverId,
-      Message: this.txtMessage
+      Message: this.convertEmojiToUnicodeEmoji(this.txtMessage) 
     }
+    debugger;
+    if (this.txtMessage == '') {
+      this.toast.error("Message Cannot Be Empty !!!");
+      return;
+    } 
     if (this.txtMessage == '') {
       this.toast.error("Message Cannot Be Empty !!!");
       return;
     }
-    
     this.chatService.SendMessageToParticularUser(MessageModel);
     this.txtMessage = '';
     this.EmptyList = false;
-
   }
 
   UpdateChatHistoryMessage() {

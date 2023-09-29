@@ -47,6 +47,7 @@ export class WhatsAppComponent implements OnInit , OnDestroy {
   CheckMessageWrite=''; 
   OnceReceiverConnected:boolean = false;
   subscription!: Subscription;
+  Emoji=false;
   //
 
 
@@ -122,9 +123,20 @@ TypingStatus(message:string)
       return;
     }
 }
-MessageSet(event: any) {
-     this.txtMessage = event.target.value;
-     this.CheckMessageWrite=event.target.value;
+MessageSet(event: any,Emoji:boolean) {
+  if(Emoji)
+  {
+    console.log(event);
+  //  this.txtMessage='&#x'+event.emoji.unified+";";
+  //  this.CheckMessageWrite='&#x'+event.emoji.unified+";";
+   this.txtMessage+=event.emoji.native;
+   this.CheckMessageWrite=event.emoji.native;
+  }
+     else
+     {
+      this.txtMessage = event.target.value;
+      this.CheckMessageWrite=event.target.value;
+     }
   // clearTimeout(this.timout)
   var MessageModel = {
     FromUserId: this.UserId,
@@ -134,11 +146,11 @@ MessageSet(event: any) {
   if(this.txtMessage=='')
   {
     this.chatService.SendStatusOfTyping(MessageModel,false);
-   
- }
+  }
   else {
     this.chatService.SendStatusOfTyping(MessageModel,true);
   }
+
 }
 
 
@@ -161,7 +173,7 @@ MessageSet(event: any) {
     }
       if(Status)
       {
-        this.MessageSet(event)
+        this.MessageSet(event, false)
       }
       else{
 
@@ -170,23 +182,25 @@ MessageSet(event: any) {
   }
 
   sendMessage(): void {
-  
+  this.Emoji = false;
     debugger;
     var MessageModel = {
       FromUserId: this.UserId,
       ToUserId: this.ReceiverId,
-      Message: this.txtMessage
+      Message: this.convertEmojiToUnicodeEmoji(this.txtMessage)
+    }
+    debugger;
+    if(MessageModel.Message[0] === '?'){
+      this.toast.error("Sorry We Are Working On This Emoji Cant Send !!");
+      return;
     }
     if (this.txtMessage == '') {
       this.toast.error("Message Cannot Be Empty !!!");
       return;
     }
-    
     this.chatService.SendMessageToParticularUser(MessageModel);
     this.txtMessage = '';
     this.EmptyList = false;
-  
-
   }
 
   UpdateChatHistoryMessage() {
@@ -333,5 +347,41 @@ MessageSet(event: any) {
     this.OldHistoryMessage ='';
      this.chatService.GetHistoryMessage(MessageModel);
    }
+
+  //  Adding Of Emoji Picker Code Below 
+  convertUnicodeEmojiToEmoji(inputText: string): string {
+    const regex = /&#x([0-9A-Fa-f]+);/g;
+    // // const regex = /&#x(?:[0-9A-Fa-f]+(?:-[0-9A-Fa-f]+)+);/g;
+    // const regex = /&#x([\uD800-\uDBFF][\uDC00-\uDFFF]);|&#x[\u2600-\u27BF];/g;
+    return inputText.replace(regex, (match, hexCode) => {
+      const codePoint = parseInt(hexCode, 16);
+      return String.fromCodePoint(codePoint);
+    });
+  }
+
+  convertEmojiToUnicodeEmoji(inputText: string) {
+    // debugger;
+    // Use regular expressions to find emoji characters and convert them to Unicode codes
+    // const regex = /([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27BF]/g;
+    const regex = /([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2194-\u21AA]|[\u2300-\u27BF]|[\u2B05-\u2B07]|[\u2934\u2935]|[\u25AA\u25AB\u25FE\u25FD]|[\u25FB\u25FC]|[\u25FE]|[\u2600-\u26FF]|[\u2702-\u27B0]|[\u2B06]|[\u2934\u2935]|[\u2B05-\u2B07]|[\u303D]|[\u3297\u3299]|[\u2B05]|[\u2B06]|[\u2B07]|[\u2934]|[\u2935]|[\u25AA]|[\u25AB]|[\u2B05]|[\u2B06]|[\u2B07]|[\u2934]|[\u2935]|[\u303D]|[\u3297]|[\u3299]|[\u2B05-\u2B07]|[\u3297-\u3299]|[\u203C\u2049]|[\u2122\u2139\u2194-\u21AA]|[\u2B05-\u2B07]|[\u2B05-\u2B07]|[\u303D]|[\u3297]|[\u3299])/g;
+    // const regex=/&#x([0-9A-Fa-f]+);/g;
+    return inputText.replace(regex, (match) => {
+      if (match.length === 2) {
+        const highSurrogate = match.charCodeAt(0);
+        const lowSurrogate = match.charCodeAt(1);
+        const codePoint = ((highSurrogate - 0xD800) * 0x400) + (lowSurrogate - 0xDC00) + 0x10000;
+        return `&#x${codePoint.toString(16)};`;
+      } else {
+        const codePoint:any = match.codePointAt(0);
+        return `&#x${codePoint.toString(16)};`;
+      }
+    });
+  }
+
+  EmojiEnable()
+  {
+    this.Emoji=!this.Emoji;
+  }
+
 
 }

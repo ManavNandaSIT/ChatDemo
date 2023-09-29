@@ -13,11 +13,19 @@ export class NavRightComponent {
 
   constructor(private Service:ChatService , private route:Router){}
 
-  LogOut(){
-     this.UserId = localStorage.getItem('UserId');
-     this.UserId = Number.parseInt(this.UserId);
-    this.Service.SetUserOffline(this.UserId);
-    localStorage.clear();
-    this.route.navigate(['/guest/login']);
+  LogOut() {
+    this.UserId = localStorage.getItem('UserId');
+    const userConfirmed = window.confirm("Do You Really Want To LogOut ?");
+  
+    if (userConfirmed) {
+      this.UserId = Number.parseInt(this.UserId);
+      this.Service.SetUserOffline(this.UserId);
+      localStorage.clear();
+      this.route.navigate(['/guest/login']);
+    }
+    else{
+      return;
+    }
   }
+  
 }

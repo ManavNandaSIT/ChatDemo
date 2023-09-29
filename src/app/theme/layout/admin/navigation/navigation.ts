@@ -46,7 +46,7 @@ const NavigationItems = [
         type: 'item',
         classes: 'nav-item',
         url: '/WhatsApp',
-        icon: 'ti ti-chat',
+        icon: 'ti ti-plant-2',
         breadcrumbs: false
       }
     ]
@@ -131,16 +131,16 @@ const NavigationItems = [
         classes: 'nav-item',
         icon: 'ti ti-brand-chrome'
       },
-      {
-        id: 'document',
-        title: 'One To One Chat',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/OneToOne',
-        icon: 'ti ti-vocabulary',
-        target: true,
-        external: true
-      }
+      // {
+      //   id: 'document',
+      //   title: 'One To One Chat',
+      //   type: 'item',
+      //   classes: 'nav-item',
+      //   url: '/OneToOne',
+      //   icon: 'ti ti-vocabulary',
+      //   target: true,
+      //   external: true
+      // }
     ]
   }
 ];

@@ -58,6 +58,7 @@ export default class LoginComponent implements OnInit {
           if(this.LoginResponse.success){
           
             localStorage.setItem('UserId' , this.LoginResponse.data);
+            localStorage.setItem('UserEmail',LoginModel.UserEmail);
             this.toast.success(this.LoginResponse.message);
             this.service.doPost(apiUrltoSetOfflineOnline,this.LoginResponse.data).pipe().subscribe({
               next:(response)=>
