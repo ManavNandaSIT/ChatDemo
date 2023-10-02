@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChatService } from 'src/app/Services/chat-service.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-nav-right',
@@ -14,18 +15,26 @@ export class NavRightComponent {
   constructor(private Service:ChatService , private route:Router){}
 
   LogOut() {
-    this.UserId = localStorage.getItem('UserId');
-    const userConfirmed = window.confirm("Do You Really Want To LogOut ?");
-  
-    if (userConfirmed) {
-      this.UserId = Number.parseInt(this.UserId);
-      this.Service.SetUserOffline(this.UserId);
-      localStorage.clear();
-      this.route.navigate(['/guest/login']);
-    }
-    else{
-      return;
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You Really Want To LogOut!',
+      showCancelButton: true,
+      confirmButtonText: 'Yes!',
+      cancelButtonText: 'No!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.UserId = localStorage.getItem('UserId');
+          this.UserId = Number.parseInt(this.UserId);
+          this.Service.SetUserOffline(this.UserId);
+          localStorage.clear();
+          this.route.navigate(['/guest/login']);
+        Swal.fire('Deleted!', 'User Logged Out Succesfully.', 'success');
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        return;
+      }
+    });
+    
+
   }
   
 }

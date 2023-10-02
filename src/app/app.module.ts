@@ -28,6 +28,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WhatsAppComponent } from './ChatDemo/whats-app/whats-app.component';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { EmojiPickerComponent } from "./ChatBoard/emoji-picker/emoji-picker.component";
+import { NgxSpinnerModule } from "ngx-spinner";
+import { ChatDownDirective } from './Directives/chat-down.directive';
 // import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // import { GroupChatComponent } from './demo/ChatBoard/group-chat/group-chat.component';
 // import { OneToOneChatComponent } from './demo/ChatBoard/one-to-one-chat/one-to-one-chat.component';
@@ -49,10 +51,13 @@ import { EmojiPickerComponent } from "./ChatBoard/emoji-picker/emoji-picker.comp
         GuestComponent,
         // GroupChatComponent,
         OneToOneChatComponent,
-        WhatsAppComponent
+        WhatsAppComponent,
+        ChatDownDirective,
     ],
     providers: [NavigationItem, ChatService, CommonService, DatePipe],
     bootstrap: [AppComponent],
-    imports: [BrowserModule, AppRoutingModule, SharedModule, BrowserAnimationsModule, HttpClientModule, ToastrModule.forRoot(), EmojiPickerComponent]
+        
+        imports: [BrowserModule, AppRoutingModule, SharedModule, BrowserAnimationsModule, HttpClientModule, ToastrModule.forRoot(), 
+            EmojiPickerComponent,  NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' })]
 })
 export class AppModule {}

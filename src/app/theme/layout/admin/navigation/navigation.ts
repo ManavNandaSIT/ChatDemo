@@ -45,7 +45,7 @@ const NavigationItems = [
         title: 'WhatsApp',
         type: 'item',
         classes: 'nav-item',
-        url: '/WhatsApp',
+        url: '/whatsapp',
         icon: 'ti ti-plant-2',
         breadcrumbs: false
       }
@@ -127,7 +127,7 @@ const NavigationItems = [
         id: 'sample-page',
         title: 'GroupChat',
         type: 'item',
-        url: '/GroupChat',
+        url: '/groupchat',
         classes: 'nav-item',
         icon: 'ti ti-brand-chrome'
       },

@@ -21,33 +21,40 @@
             <span>or</span>
           </div>
           <h5 class="my-4 d-flex justify-content-center"> {{SignUpConstant.SignUpWithEmail}} </h5>
-          <form [formGroup]="SignUpForm" (submit)="SignUpUser()">
+          <form [formGroup]="SignUpForm" (submit)="UserValidCheck()">
           <div class="row">
             <div class="col-md-6">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"  formControlName="FirstName"/>
                 <label for="floatingInput">{{SignUpConstant.FirstName}}</label>
               </div>
+              <span  class="text-danger" *ngIf="submitted &&SignUpValidations.FirstName.errors?.['required']">{{SignUpConstant.FirstNameIsRequired}}</span>
             </div>
             <div class="col-md-6">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" formControlName="LastName" />
                 <label for="floatingInput">{{SignUpConstant.LastName}}</label>
               </div>
+              <span  class="text-danger" *ngIf="submitted &&SignUpValidations.LastName.errors?.['required']">{{SignUpConstant.LastNameIsRequired}}</span>
             </div>
           </div>
           <div class="form-floating mb-3">
             <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" formControlName="UserName" />
             <label for="floatingInput"> {{SignUpConstant.Username}}</label>
           </div>
+          <span  class="text-danger" *ngIf="submitted &&SignUpValidations.UserName.errors?.['required']">{{SignUpConstant.UsernameRequired}}</span>
           <div class="form-floating mb-3">
             <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" formControlName="EmailId" />
             <label for="floatingInput">{{SignUpConstant.EMAIL}}</label>
           </div>
+          <span  class="text-danger" *ngIf="submitted &&SignUpValidations.EmailId.errors?.['required']">{{SignUpConstant.EmailIdIsRequired}}</span>
+          <span  class="text-danger" *ngIf="submitted &&SignUpValidations.EmailId.errors?.['email']">{{SignUpConstant.ValidEmail}}</span>
           <div class="form-floating mb-3">
             <input type="password" class="form-control" id="floatingInput" placeholder="name@example.com" formControlName="Password"  />
             <label for="floatingInput">{{SignUpConstant.PASSWORD}}</label>
           </div>
+          <span  class="text-danger" *ngIf="submitted &&SignUpValidations.Password.errors?.['required']">{{SignUpConstant.PasswordRequired}}</span>
+          <span  class="text-danger" *ngIf="submitted &&SignUpValidations.Password.errors?.['pattern']">{{SignUpConstant.ValidPassword}}</span>
           <div class="form-check mt-3s">
             <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked="" />
             <label class="form-check-label" for="customCheckc1">

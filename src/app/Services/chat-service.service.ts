@@ -7,6 +7,7 @@ import { ApiUrlHelper } from '../../Common/apiUrlHelper';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { UserStatusEnum } from '../CommanEnum/StatusEnum';
 
 
 
@@ -33,6 +34,8 @@ export class ChatService {
   UnreadMessageOfUser = this.UnreadMessageCountByUser.asObservable();
   Id: any;
   UnreadMessageCountNumber: any;
+  UserStatusBasedOnChoice = new EventEmitter<String>();
+
 
 
 
@@ -88,7 +91,7 @@ export class ChatService {
     }
     else {
       this.SendLoginUserId();
-      this.route.navigate(['chatBoard']);
+      this.route.navigate(['/whatsapp']);
     }
   }
 
@@ -103,10 +106,14 @@ export class ChatService {
       this._hubConnection.send('UpdateLiveStatusChat',Data);
   }
 
+  UpdateStatusOfUserBasedChoice(UserId:number,UserStatus:UserStatusEnum)
+  {
+    this._hubConnection.send('UpdateStatusOfUserBasedChoice',UserId,UserStatus);
+  }
+
   
   SetUserOffline(UserId:any)
   {
-     debugger;
       this._hubConnection.send('SetUserOffline',UserId);
   }
 
@@ -164,14 +171,15 @@ export class ChatService {
     })
     
     this._hubConnection.on('SendStatusOfTyping', async (Typinstatus: OldHistoryMessageMOdel) => {
-      debugger;
      this.statusOfUserTyping=Typinstatus
            this.TypingStatus.next( this.statusOfUserTyping);
            this.messageTypeStatusEmitter.emit( this.statusOfUserTyping);
     })
   
-
-     
+    this._hubConnection.on('UpdateStatusOfUserBasedChoice',async (data:any)=>
+    {
+       this.UserStatusBasedOnChoice.emit(data);
+    });
 
     this._hubConnection.on('SendMessageToParticularUser', async (LatestMessageFromDB: any) => {
       this.LatestMessage = LatestMessageFromDB;

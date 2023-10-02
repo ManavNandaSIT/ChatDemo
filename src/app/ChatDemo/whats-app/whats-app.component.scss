@@ -143,8 +143,8 @@ body {
   }
   #frame #sidepanel #profile .wrap #status-options {
     position: absolute;
-    opacity: 0;
-    visibility: hidden;
+    // opacity: 0;
+    // visibility: hidden;
     width: 150px;
     margin: 70px 0 0 0;
     border-radius: 6px;
@@ -701,4 +701,13 @@ body {
     border-radius: 20px !important;
     width: 200px !important;
     height: 100px !important;
+  }
+
+  .NoChatHead{
+    border: 2px solid black;
+    font-weight: bolder;
+    border-radius: 20px;
+    background-color: black;
+    color: red;
+    font-size: 25px;
   }

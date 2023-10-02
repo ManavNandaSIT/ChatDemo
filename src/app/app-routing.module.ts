@@ -35,11 +35,11 @@ const routes: Routes = [
         path: 'OneToOne/:id',
         component: OneToOneChatComponent
       },{
-        path: 'GroupChat',
+        path: 'groupchat',
         component: GroupChatComponent
       },
       {
-        path:'WhatsApp',
+        path:'whatsapp',
         component:WhatsAppComponent
       }
       

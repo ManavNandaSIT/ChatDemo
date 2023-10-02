@@ -47,7 +47,11 @@ export const SignUpConstant={
     EMAIL : "Email Address",
     PASSWORD : "Password",
     Username:"Username",
-    AlreadyHaveAccount: "Already have an account?"
+    AlreadyHaveAccount: "Already have an account?",
+    UsernameRequired : "Username is Required",
+    ValidEmail : "Please Enter Valid Email Id",
+    PasswordRequired: "Password Is Required",
+    ValidPassword: "Password must contain , 1 lowercase , 1 uppercase, 1 special character etc"
 }
 
 export const WhatsUpConstant ={

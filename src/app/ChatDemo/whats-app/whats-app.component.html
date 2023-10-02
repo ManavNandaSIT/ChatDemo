@@ -8,8 +8,6 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
-
-<!doctype html>
 <html class="">
   <head>
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300" rel="stylesheet" type="text/css" />
@@ -22,26 +20,26 @@
     <div id="frame">
       <div id="sidepanel">
         <div id="profile">
-          <div class="wrap">
-            <img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" class="online" alt="" />
+          <div class="wrap" >
+            <img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" [ngClass]="UserStatusBasedOnUser" alt="" (click)="toggleStatusOptions()" />
             <p>{{UserName}}</p>
-            <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-            <div id="status-options">
+            <i class="fa fa-chevron-down expand-button" aria-hidden="true" (click)="toggleStatusOptions()"></i>
+            <div id="status-options" *ngIf="statusOptionsActive" >
               <ul>
-                <li id="status-online" class="active"><span class="status-circle"></span> <p>{{WhatsupConstants.Online}}</p></li>
-                <li id="status-away"><span class="status-circle"></span> <p>{{WhatsupConstants.Away}}</p></li>
-                <li id="status-busy"><span class="status-circle"></span> <p>{{WhatsupConstants.Busy}}</p></li>
-                <li id="status-offline"><span class="status-circle"></span> <p>{{WhatsupConstants.Offline}}</p></li>
+                <li id="status-online" class="active" (click)="UpdateStatusOfUserBasedChoice(UserStatusEnum.Online)"><span class="status-circle"></span> <p>{{WhatsupConstants.Online}}</p></li>
+                <li id="status-away" (click)="UpdateStatusOfUserBasedChoice(UserStatusEnum.Away)"><span class="status-circle"></span> <p>{{WhatsupConstants.Away}}</p></li>
+                <li id="status-busy" (click)="UpdateStatusOfUserBasedChoice(UserStatusEnum.Busy)"><span class="status-circle"></span> <p>{{WhatsupConstants.Busy}}</p></li>
+                <li id="status-offline" (click)="UpdateStatusOfUserBasedChoice(UserStatusEnum.Offline)"><span class="status-circle"></span> <p>{{WhatsupConstants.Offline}}</p></li>
               </ul>
             </div>
-            <div id="expanded">
+            <!-- <div id="expanded" *ngIf="statusOptionsActive">
               <label for="twitter"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
               <input name="twitter" type="text" value="mikeross" />
               <label for="twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
               <input name="twitter" type="text" value="ross81" />
               <label for="twitter"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
               <input name="twitter" type="text" value="mike.ross" />
-            </div>
+            </div> -->
           </div>
         </div>
         <div id="search">
@@ -55,17 +53,21 @@
             <!--All Contacts Lists Here   -->
             <li class="contact" >
               <div class="wrap" (click)="GetReceiverData(user)">
-                <span [ngClass]="{'contact-status online': user.isOnline ,'contact-status offline': !user.isOnline}"></span> 
+                <span [ngClass]="{'contact-status online': user.isOnline ,'contact-status offline': !user.isOnline,
+                'contact-status busy':user.userStatus=='busy' , 'contact-status away':user.userStatus=='away'}"></span> 
+                <!-- <span [ngClass]="'contact-status '+user.userStatus"></span>  -->
                 <img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
                 <div class="meta">
                   <p class="name">{{user.firstName}} <a *ngIf="user.noOfUnreadMessages>0" href="javascript:void(0);" class="ms-1 p-1 UnreadMessages text-center">{{user.noOfUnreadMessages}}</a> </p>
-                  
-                  <p *ngIf="!user.isOnline" class="preview">{{WhatsupConstants.LastSeen}} {{user.lastStatus | date : 'MMM dd, YYYY'}}</p>
-                  <!-- && user.lastStatus!=='1900-01-01T00:00:00'; -->
-                  <!-- else LastSeen -->
-                  <!-- <ng-template #LastSeen class="preview">
-                        Last Seen Year Ago
-                  </ng-template> -->
+                  <p *ngIf="!user.isOnline ; else LastSeen" class="preview">
+                    {{ WhatsupConstants.LastSeen }} {{ user.lastStatus | date : 'MMM dd, yyyy' }}
+                  </p>
+                  <!-- Display "Online" if the user is online or has no lastStatus date -->
+                  <ng-template #LastSeen>
+                    <p class="preview">
+                      Online
+                    </p>
+                  </ng-template>
                 </div>
               </div>
             </li>
@@ -77,6 +79,9 @@
         </div>
       </div>
 
+      <div class="text-center">
+        <ngx-spinner bdOpacity=0.9 bdColor="rgba(51,51,51,0.8)" size="large" color="#fff" [fullScreen]="false"></ngx-spinner>
+      </div>
       <!-- If Receiver Is Not Selected -->
       <div *ngIf="!OnceReceiverConnected" class="content text-center">
         <h1 class="mt-3 NoReceiverHead p-2">{{WhatsupConstants.LetsStartChat}}   <i class="fa fa-comments-o" aria-hidden="true"></i></h1>
@@ -97,8 +102,10 @@
           </div>
         </div>
         <div #chatMessagesContainer class="messages" *ngIf="ReceiverId>0" >
-          <ul  *ngFor="let msg of OldHistoryMessage; let Id = index">
-
+          <div *ngIf="EmptyList" class="text-center">
+            <h2 class="NoChatHead">There Are No Chat Between These Users.</h2>
+          </div>
+          <ul *ngFor="let msg of OldHistoryMessage; let Id = index; let last = last" [appChatDown]="last ? true : false">
             <div class="msg" *ngIf="Id > 0 ? sameDates(msg.createdDate, OldHistoryMessage[Id-1].createdDate): true">
               <div class="text-center Date">{{msg.createdDate | date : 'MMM dd, YYYY'}}</div>
               </div>
@@ -112,13 +119,8 @@
                 <span>{{formatTime(msg.createdDate)}}</span>
               </p>
             </li>
-            <!-- <li class="">
-              <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-              <p>When you're backed against the wall, break the god damn thing down.</p>
-            </li> -->
-
           </ul>
-          <ul  *ngFor="let msg of OneToOneChatMessage">
+          <ul  *ngFor="let msg of OneToOneChatMessage;let last = last" [appChatDown]="last ? true : false">
             <li   [ngClass]="{'replies': msg.fromUserId == UserId, 'sent': msg.fromUserId != UserId}">
               <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
               <p> 

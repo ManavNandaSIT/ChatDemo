@@ -6,6 +6,8 @@ import { ApiUrlHelper } from 'src/Common/apiUrlHelper';
 import { ToastrService } from 'ngx-toastr';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LogInConstant, commonErrorMessage } from 'src/app/Constants/CommonConstant';
+import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 @Component({
@@ -21,7 +23,8 @@ export default class LoginComponent implements OnInit {
   loginConstant: any = [];
   CommonErrorConstant:any =[];
 
-  constructor(private route:Router , private service:CommonService , private apiHelper:ApiUrlHelper , private toast:ToastrService ){
+  constructor(private route:Router , private service:CommonService , private apiHelper:ApiUrlHelper , private toast:ToastrService 
+    ,private spinner:NgxSpinnerService){
   }
   ngOnInit(): void {
     this.loginConstant = LogInConstant;
@@ -35,7 +38,7 @@ export default class LoginComponent implements OnInit {
     // Get Method For Apply Validations
     get LoginValidations(){
       return this.LoginForm.controls;
-   }
+    }
  
    // Checking If User Added Correct Values
    submitted=false;
@@ -48,7 +51,6 @@ export default class LoginComponent implements OnInit {
 
   LoginUser(){
     if(this.LoginForm){
-
       var LoginModel ={
         UserEmail: this.LoginForm.value.UserEmail,
         Password: this.LoginForm.value.UserPassword
@@ -70,7 +72,7 @@ export default class LoginComponent implements OnInit {
               {
                 if(response.success)
                 {
-                  this.route.navigate(['/default']);
+                  this.route.navigate(['/whatsapp']);
                 }
               }
              

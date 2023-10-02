@@ -19,6 +19,8 @@ export default class RegisterComponent implements OnInit {
   SignUpForm:any;
   SignUpResponse:any;
   SignUpConstant:any =[];
+  submitted=false;
+
   ngOnInit(): void {
     this.SignUpConstant = SignUpConstant;
     this.SignUpForm = new FormGroup({
@@ -26,11 +28,24 @@ export default class RegisterComponent implements OnInit {
       LastName :new FormControl('' , [Validators.required]) ,
       UserName: new FormControl('' , [Validators.required]),  
       EmailId :new FormControl('' , [Validators.required , Validators.email]), 
-      Password: new FormControl('' , [Validators.required , Validators.pattern('(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"')])
+      Password: new FormControl('' , [Validators.required , Validators.pattern('^(?=.*[A-Z])(?=.*[a-z])(?=.*\d|[^A-Za-z0-9]).{8,}$')])
     })
   }
 
+   // Get Method For Apply Validations
+   get SignUpValidations(){
+    return this.SignUpForm.controls;
+  }
+
+  UserValidCheck(){
+    this.submitted = true;
+    if(this.SignUpForm.valid){
+      this.SignUpUser();
+    }
+  }
+
   SignUpUser(){
+    if(this.SignUpForm){
     var SignUpModel = {
       FirstName : this.SignUpForm.value.FirstName,
       LastName: this.SignUpForm.value.LastName,
@@ -54,6 +69,5 @@ export default class RegisterComponent implements OnInit {
       }
     })
   }
-
-
+}
 }

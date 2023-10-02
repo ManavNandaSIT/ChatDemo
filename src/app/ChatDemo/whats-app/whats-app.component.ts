@@ -9,6 +9,8 @@ import { OldHistoryMessageMOdel, message, messageModelOneToOne } from 'src/Commo
 import { WhatsUpConstant } from 'src/app/Constants/CommonConstant';
 import { ChatService } from 'src/app/Services/chat-service.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { NgxSpinnerService } from "ngx-spinner";
+import { UserStatusEnum } from 'src/app/CommanEnum/StatusEnum';
 
 @Component({
   selector: 'app-whats-app',
@@ -59,7 +61,9 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
    sellersPermitFile: any;
    sellersPermitString: string='';
    WhatsupConstants:any =[];
-
+   UserStatusEnum:any;
+   UserStatusBasedOnUser:any;
+   
 
   constructor(private renderer: Renderer2, private el: ElementRef, private chatService: ChatService,
     private _ngZone: NgZone,
@@ -68,7 +72,8 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
     private route: Router,
     private toast: ToastrService,
     private datePipe: DatePipe,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private spinner: NgxSpinnerService
   ) {
     this.subscribeToEventsInitial();
     this.subscribeToEvents();
@@ -80,8 +85,6 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
   }
 
   scrollToBottom() {
-    // const messagesContainer = this.el.nativeElement.querySelector('.messages');
-    // messagesContainer.scrollTop = messagesContainer.scrollHeight;
     if (this.chatMessagesContainer) {
       const container = this.chatMessagesContainer.nativeElement;
       container.scrollTop = container.scrollHeight;
@@ -109,6 +112,7 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.TypingStatus(this.CheckMessageWrite);
     }, 1000);
+    this.UserStatusEnum=UserStatusEnum
 
   }
 
@@ -144,12 +148,10 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
       this.txtMessage = event.target.value;
       this.CheckMessageWrite = event.target.value;
     }
-    // clearTimeout(this.timout)
     var MessageModel = {
       FromUserId: this.UserId,
       ToUserId: this.ReceiverId
     }
-    // this.timout = setTimeout(this.typingClose, 4000);
     if (this.txtMessage == '') {
       this.chatService.SendStatusOfTyping(MessageModel, false);
     }
@@ -199,16 +201,12 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
       ImageString:this.ImageSelected64,
       CreatedDate:this.currentTime
     }
-
-    // if (this.txtMessage == '') {
-    //   this.toast.error("Message Cannot Be Empty !!!");
-    //   return;
-    // }
     this.chatService.SendMessageToParticularUser(MessageModel);
     this.txtMessage = '';
     this.EmptyList = false;
     this.ImageSelected64='';
     this.MessageStatusType=1;
+    this.CheckMessageWrite='';
   }
 
   UpdateChatHistoryMessage() {
@@ -217,16 +215,24 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
       ToUserId: this.ReceiverId
     }
     this.chatService.SendStatusOfTyping(MessageModel, false);
-    this.route.navigate(['GroupChat']);
+    this.route.navigate(['/groupchat']);
   }
 
-  // Some Time Fteching Functions
+  // Some Time Fetching As Per Need Functions
   getCurrentTime(): void { this.currentTime = new Date(); }
   formatTime(time: Date): string { return this.datePipe.transform(time, 'mediumTime')!; }
   formatDate(date: Date): string { return this.datePipe.transform(date, 'mediumDate')!; }
 
-  // Method For Fteching All The Users And Their Unread Messages
+  // Method For Fetching All The Users And Their Unread Messages
   private subscribeToEventsInitial(): void {
+    this.chatService.UserStatusBasedOnChoice.subscribe((value)=>
+    {
+       this._ngZone.run(()=>
+       {
+          this.UserStatusBasedOnUser=value;
+       })
+
+    })
     this.chatService.UnreadMessageOfUser.subscribe((value) => {
       this._ngZone.run(() => {
         if (typeof value === 'object') {
@@ -234,7 +240,6 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
         }
       });
     });
-
     this.chatService.selectData.pipe(debounceTime(10)).subscribe((value) => {
       this._ngZone.run(() => {
         if (typeof value === 'object') {
@@ -247,6 +252,7 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
               ...unreadMessage
             };
           });
+          console.log(this.combinedData);
         }
       })
     });
@@ -262,12 +268,12 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
     })
   }
 
-  // Method For Fteching History Messages , Typing Indicator , One To One Chat Handling
+  // Method For Fetching History Messages , Typing Indicator , One To One Chat Handling
   private subscribeToEvents(): void {
     this.chatService.OldMessageEmiiter.subscribe((Oldmessage: OldHistoryMessageMOdel) => {
       this._ngZone.run(async () => {
         this.OldHistoryMessage = Oldmessage;
-        console.log(this.OldHistoryMessage);
+        this.spinner.hide();
         if (this.OldHistoryMessage == '' || this.OldHistoryMessage == null || this.OldHistoryMessage == undefined) {
           this.EmptyList = true;
         }
@@ -300,16 +306,13 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
         }
       }
     });
-    const source = interval(1000);
-    this.subscription = source.subscribe(val => this.TypingStatus(this.CheckMessageWrite));
+    const source = interval(100);
+    setTimeout(() => {
+      this.subscription = source.subscribe(val => this.TypingStatus(this.CheckMessageWrite));
+    }, 1000);
   }
 
-  // ScrollHeight To Bottom After Message View
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }
-
-
+ 
   // fetching Receiver Data
   GetReceiverData(item: any) {
     this.OnceReceiverConnected = true;
@@ -320,13 +323,13 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
         this.ReceiverName = response.data.userName;
       }
     })
-    //  this.subscribeToEvents();
     var MessageModel = {
       FromUserId: this.UserId,
       ToUserId: this.ReceiverId
     }
-    this.OneToOneChatMessage = [];
-    this.OldHistoryMessage = '';
+    this.OneToOneChatMessage = []; 
+    this.OldHistoryMessage = null;
+    this.spinner.show();
     this.chatService.GetHistoryMessage(MessageModel);
   }
 
@@ -367,7 +370,6 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
   
   // Below Method Used To Convert Emoji To Unicode
   convertEmojiToUnicodeEmoji(inputText: string) {
-    // const regex = /([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27BF]/g;
     const regex = /([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2194-\u21AA]|[\u2300-\u27BF]|[\u2B05-\u2B07]|[\u2934\u2935]|[\u25AA\u25AB\u25FE\u25FD]|[\u25FB\u25FC]|[\u25FE]|[\u2600-\u26FF]|[\u2702-\u27B0]|[\u2B06]|[\u2934\u2935]|[\u2B05-\u2B07]|[\u303D]|[\u3297\u3299]|[\u2B05]|[\u2B06]|[\u2B07]|[\u2934]|[\u2935]|[\u25AA]|[\u25AB]|[\u2B05]|[\u2B06]|[\u2B07]|[\u2934]|[\u2935]|[\u303D]|[\u3297]|[\u3299]|[\u2B05-\u2B07]|[\u3297-\u3299]|[\u203C\u2049]|[\u2122\u2139\u2194-\u21AA]|[\u2B05-\u2B07]|[\u2B05-\u2B07]|[\u303D]|[\u3297]|[\u3299])/g;
     return inputText.replace(regex, (match) => {
       if (match.length === 2) {
@@ -450,6 +452,14 @@ getImageUrl(image:any): SafeResourceUrl {
     else {
       alert("No file selected");
     }
+  }
+
+  // Updation of user Status
+  UpdateStatusOfUserBasedChoice(UserStatus:UserStatusEnum)
+  { 
+    debugger;
+    console.log(UserStatus);
+     this.chatService.UpdateStatusOfUserBasedChoice(this.UserId,UserStatus);
   }
 
 }
