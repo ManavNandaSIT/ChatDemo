@@ -70,8 +70,8 @@ export class ChatService {
   LiveUserStatus() {
     this._hubConnection.send('LiveUserDetail', localStorage.getItem("UserId"));
   }
-  GetUserList() {
-    this._hubConnection.send('GetALlUserList');
+  GetUserList(Username:string) {
+    this._hubConnection.send('GetALlUserList',Username);
   }
 
   SendMessageToParticularUser(message: any) {
@@ -131,7 +131,7 @@ export class ChatService {
         this.connectionIsEstablished = true;
         this.connectionEstablished.emit(true);
         setInterval(() => {
-          this.GetUserList();
+          this.GetUserList('');
           this.GetMessageCount();
         }, 5000);
         // this.GetUserList();   

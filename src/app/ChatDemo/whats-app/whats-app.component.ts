@@ -62,7 +62,8 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
    sellersPermitString: string='';
    WhatsupConstants:any =[];
    UserStatusEnum:any;
-   UserStatusBasedOnUser:any;
+   UserStatusBasedOnUser:string='';
+   SearchedString:string = '';
    
 
   constructor(private renderer: Renderer2, private el: ElementRef, private chatService: ChatService,
@@ -96,6 +97,7 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    
     this.WhatsupConstants = WhatsUpConstant;
     this.UserId = localStorage.getItem('UserId');
     this.UserId = Number.parseInt(this.UserId);
@@ -225,7 +227,7 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
 
   // Method For Fetching All The Users And Their Unread Messages
   private subscribeToEventsInitial(): void {
-    this.chatService.UserStatusBasedOnChoice.subscribe((value)=>
+    this.chatService.UserStatusBasedOnChoice.subscribe((value:string)=>
     {
        this._ngZone.run(()=>
        {
@@ -264,6 +266,9 @@ export class WhatsAppComponent implements OnInit, OnDestroy {
     this.service.doPost(apiUrl, this.UserId).pipe().subscribe({
       next: (response) => {
         this.UserName = response.data.userName;
+        this.UserStatusBasedOnUser = response.data.userStatus;
+        console.log(this.UserStatusBasedOnUser);
+        console.log(response);
       }
     })
   }
@@ -457,9 +462,16 @@ getImageUrl(image:any): SafeResourceUrl {
   // Updation of user Status
   UpdateStatusOfUserBasedChoice(UserStatus:UserStatusEnum)
   { 
-    debugger;
-    console.log(UserStatus);
+    this.statusOptionsActive = false;
      this.chatService.UpdateStatusOfUserBasedChoice(this.UserId,UserStatus);
+  }
+
+  // Search User Functionality
+  SearchUser(SearchString:any){
+    var SearchedUsername = SearchString.target.value;
+    console.log(SearchedUsername);
+    this.combinedData = this.combinedData.filter(x=>x.userName==SearchedUsername);
+    console.log(this.combinedData);
   }
 
 }

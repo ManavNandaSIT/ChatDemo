@@ -28,7 +28,7 @@ export class NavRightComponent {
           this.Service.SetUserOffline(this.UserId);
           localStorage.clear();
           this.route.navigate(['/guest/login']);
-        Swal.fire('Deleted!', 'User Logged Out Succesfully.', 'success');
+        // Swal.fire('Logged!', 'User Logged Out Succesfully.', 'success');
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         return;
       }

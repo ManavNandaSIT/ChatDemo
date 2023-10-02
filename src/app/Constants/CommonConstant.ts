@@ -63,5 +63,7 @@ export const WhatsUpConstant ={
     Settings:"Settings",
     LastSeen:"Last Seen",
     LetsStartChat:"Lets Start The Conversation ",
-    WatchGifs:"Watch Gifs If Dont Want To Chat !!!"
+    WatchGifs:"Watch Gifs If Dont Want To Chat !!!",
+    NoChatBetweenUsers:"There Are No Chat Between These Users."
+    
 }
